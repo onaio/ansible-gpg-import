@@ -26,10 +26,9 @@
   become: yes
   become_user: "{{ gpg_user }}"
   with_items:
-    - { name: public.key, src: "{{ gpg_private_key }}" }
-    - { name: private.key, src: "{{ gpg_public_key }}" }
+    - { name: private.key, src: "{{ gpg_private_key }}" }
+    - { name: public.key, src: "{{ gpg_public_key }}" }
     - { name: trust, src: "{{ gpg_trust_file }}" }
-
 
 - name: Make sure the GPG config exists
   become: yes
