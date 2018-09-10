@@ -1,1 +1,1 @@
-import_directory: "~/gpg_import"
+import_directory: "/home/{{ gpg_user }}/.gpg_import"
