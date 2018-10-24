@@ -1,12 +1,12 @@
 ---
-- name: make sure the import directory is empty
+- name: Ensure the import directory is empty
   become: yes
   become_user: "root"
   file:
     path: "{{ import_directory }}"
     state: absent
 
-- name: make sure the import directory is empty
+- name: Ensure the import directory is empty
   become: yes
   become_user: "root"
   file:
@@ -16,7 +16,7 @@
     owner: "{{ gpg_user }}"
     group: "{{ gpg_group }}"
 
-- name: copy gpg keys
+- name: Copy gpg keys
   copy:
     src: "{{ item.src }}"
     dest: "{{ import_directory }}/{{ item.name }}"
@@ -26,29 +26,28 @@
   become: yes
   become_user: "{{ gpg_user }}"
   with_items:
-    - { name: public.key, src: "{{ gpg_private_key }}" }
-    - { name: private.key, src: "{{ gpg_public_key }}" }
+    - { name: private.key, src: "{{ gpg_private_key }}" }
+    - { name: public.key, src: "{{ gpg_public_key }}" }
     - { name: trust, src: "{{ gpg_trust_file }}" }
 
-
-- name: Make sure the GPG config exists
+- name: Ensure the gpg config exists
   become: yes
   become_user: "{{ gpg_user }}"
   command: "gpg --list-keys"
   args:
     creates: "{{ gpg_home }}/.gnupg"
 
-- name: import public key
+- name: Import public key
   become: yes
   become_user: "{{ gpg_user }}"
   command: "gpg --trustdb-name {{ gpg_trustdb_file }} --import {{ import_directory }}/public.key"
   args:
     creates: "{{ gpg_home }}/.gnupg/{{ gpg_trustdb_file }}"
 
-- name: import private key
+- name: Import private key
   become: yes
   become_user: "{{ gpg_user }}"
-  command: "gpg --allow-secret-key-import {{ import_directory }}/private.key"
+  command: "gpg --allow-secret-key-import --import {{ import_directory }}/private.key"
   changed_when: output is defined and output.stdout != ""
 
 - name: Add trust
@@ -57,7 +56,7 @@
   command: "gpg --import-ownertrust {{ import_directory }}/trust"
   changed_when: output is defined and output.stdout != ""
 
-- name: delete temporary files
+- name: Delete temporary files
   become: yes
   become_user: "root"
   file:

@@ -1,2 +1,2 @@
-gpg_home: "~"
+gpg_home: "/home/{{ gpg_user }}"
 gpg_trustdb_file: "trustdb.gpg"
