@@ -47,7 +47,7 @@
 - name: import private key
   become: yes
   become_user: "{{ gpg_user }}"
-  command: "gpg --allow-secret-key-import {{ import_directory }}/private.key"
+  command: "gpg --allow-secret-key-import --import {{ import_directory }}/private.key"
   changed_when: output is defined and output.stdout != ""
 
 - name: Add trust
