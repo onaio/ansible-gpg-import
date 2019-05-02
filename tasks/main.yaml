@@ -1,30 +1,21 @@
 ---
-- name: make sure the import directory is empty
+- name: Make sure the import directory exists
   become: yes
-  become_user: "root"
-  file:
-    path: "{{ import_directory }}"
-    state: absent
-
-- name: make sure the import directory is empty
-  become: yes
-  become_user: "root"
-  file:
-    path: "{{ import_directory }}"
+  become_user: "{{ gpg_user }}"
+  tempfile:
+    prefix: "gpg-import"
     state: directory
-    mode: 0750
-    owner: "{{ gpg_user }}"
-    group: "{{ gpg_group }}"
+  register: gpg_import_directory
 
-- name: copy gpg keys
+- name: Copy gpg keys
+  become: yes
+  become_user: "{{ gpg_user }}"
   copy:
     src: "{{ item.src }}"
-    dest: "{{ import_directory }}/{{ item.name }}"
+    dest: "{{ gpg_import_directory.path }}/{{ item.name }}"
     owner: "{{ gpg_user }}"
     group: "{{ gpg_group }}"
     mode:  0600
-  become: yes
-  become_user: "{{ gpg_user }}"
   with_items:
     - { name: private.key, src: "{{ gpg_private_key }}" }
     - { name: public.key, src: "{{ gpg_public_key }}" }
@@ -37,28 +28,21 @@
   args:
     creates: "{{ gpg_home }}/.gnupg"
 
-- name: import public key
+- name: Import public key
   become: yes
   become_user: "{{ gpg_user }}"
-  command: "gpg --trustdb-name {{ gpg_trustdb_file }} --import {{ import_directory }}/public.key"
+  command: "gpg --trustdb-name {{ gpg_trustdb_file }} --import {{ gpg_import_directory.path }}/public.key"
+
+- name: Import private key
+  become: yes
+  become_user: "{{ gpg_user }}"
+  command: "gpg --allow-secret-key-import --import {{ gpg_import_directory.path }}/private.key"
+  changed_when: output is defined and output.stdout != ""
   args:
     creates: "{{ gpg_home }}/.gnupg/{{ gpg_trustdb_file }}"
-
-- name: import private key
-  become: yes
-  become_user: "{{ gpg_user }}"
-  command: "gpg --allow-secret-key-import --import {{ import_directory }}/private.key"
-  changed_when: output is defined and output.stdout != ""
 
 - name: Add trust
   become: yes
   become_user: "{{ gpg_user }}"
-  command: "gpg --import-ownertrust {{ import_directory }}/trust"
+  command: "gpg --import-ownertrust {{ gpg_import_directory.path }}/trust"
   changed_when: output is defined and output.stdout != ""
-
-- name: delete temporary files
-  become: yes
-  become_user: "root"
-  file:
-    path: "{{ import_directory }}"
-    state: absent
