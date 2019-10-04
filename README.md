@@ -33,7 +33,7 @@ Playbook to import a PGP keypair might look like:
 License
 -------
 
-This project is released under the Apache 2 license. Read the [LICENSE.txt](./LICENSE.txt) file for more details.
+This project is released under the Apache 2 license. Read the [LICENSE](./LICENSE) file for more details.
 
 Authors
 -------
