@@ -25,6 +25,7 @@ Playbook to import a PGP keypair might look like:
           gpg_user: "ubuntu"
           gpg_group: "ubuntu"
           gpg_private_key: "files/pgp/priv.key"
+          gpg_private_key_passphrase: "somesecret"
           gpg_public_key: "files/pgp/pub.key"
           gpg_trust_file: "files/pgp/ultimate.trust"
       roles:

@@ -5,3 +5,4 @@ gpg_group: "root"
 gpg_private_key:
 gpg_public_key:
 gpg_trust_file:
+gpg_private_key_passphrase: ""
