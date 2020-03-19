@@ -37,9 +37,13 @@
   become: yes
   become_user: "{{ gpg_user }}"
   command: "gpg --allow-secret-key-import{% if gpg_private_key_passphrase|length > 0 %} --batch --passphrase=\"{{ gpg_private_key_passphrase }}\"{% endif %} --import {{ gpg_import_directory.path }}/private.key"
-  changed_when: output is defined and output.stdout != ""
-  args:
-    creates: "{{ gpg_home }}/.gnupg/{{ gpg_trustdb_file }}"
+  register: gpg_private_key_import_status
+  ignore_errors: true
+
+- name: Check if private key imported successfully
+  fail:
+    msg: "An error occurred while importing the private key"
+  when: gpg_private_key_import_status.rc != 0 and "already in secret keyring" not in gpg_private_key_import_status.stderr
 
 - name: Add trust
   become: yes

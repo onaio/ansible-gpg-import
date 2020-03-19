@@ -1,4 +1,4 @@
-gpg_home: "{{ ansible_env.HOME }}"
+gpg_home: "~"
 gpg_trustdb_file: "trustdb.gpg"
 gpg_user: "root"
 gpg_group: "root"
